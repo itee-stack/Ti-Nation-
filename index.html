@@ -14,7 +14,32 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
 .font-display{font-family:'Cormorant Garamond',serif}
 .font-body{font-family:'DM Sans',sans-serif}
 
-
+/* AI Chat Widget */
+#chat-widget{position:fixed;bottom:var(--chat-bottom,20px);right:var(--chat-right,20px);width:var(--chat-width,320px);background:#1A1815;border:1.5px solid rgba(212,175,55,.4);border-radius:16px;box-shadow:0 20px 50px rgba(212,175,55,.2),0 8px 32px rgba(0,0,0,.15);overflow:hidden;z-index:40;font-family:'DM Sans',sans-serif;backdrop-filter:blur(12px);transition:all .3s ease}
+#chat-widget.minimized{width:60px;height:60px;border-radius:50%}
+#chat-widget.minimized #chat-title{display:none}
+#chat-widget.minimized #chat-messages,#chat-widget.minimized #chat-tools,#chat-widget.minimized #chat-input-area{display:none}
+#chat-widget.minimized #chat-header{padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;height:60px}
+#chat-widget.minimized #chat-minimize-btn{background:linear-gradient(135deg,#D4AF37,#8B0000);border:none;color:#F8F6F1;cursor:pointer;padding:0;border-radius:50%;width:60px;height:60px;display:flex;align-items:center;justify-content:center;transition:all .2s;font-size:24px;transform:rotate(180deg)}
+#chat-widget.minimized #chat-minimize-btn:hover{transform:rotate(180deg) scale(1.1);box-shadow:0 8px 20px rgba(212,175,55,.4)}
+#chat-header{background:linear-gradient(135deg,#D4AF37,#8B0000);color:#F8F6F1;padding:14px 16px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1.5px solid rgba(0,0,0,.1)}
+#chat-minimize-btn{background:rgba(248,246,241,.1);border:none;color:#F8F6F1;cursor:pointer;padding:6px 8px;border-radius:4px;font-size:16px;transition:all .2s;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+#chat-minimize-btn:hover{background:rgba(248,246,241,.15);transform:translateY(-2px)}
+#chat-messages{height:var(--chat-height,240px);overflow-y:auto;padding:12px;background:#2D2A26;scrollbar-width:thin;scrollbar-color:#D4AF37 #2D2A26}
+#chat-messages::-webkit-scrollbar{width:6px}
+#chat-messages::-webkit-scrollbar-track{background:#2D2A26}
+#chat-messages::-webkit-scrollbar-thumb{background:#D4AF37;border-radius:3px}
+.chat-message{margin-bottom:12px;line-height:1.5}
+.chat-message.user{text-align:right;color:#F8F6F1;background:rgba(212,175,55,.2);padding:10px 12px;border-radius:10px;border-bottom-right-radius:2px}
+.chat-message.ai{color:#D4AF37;background:rgba(212,175,55,.1);padding:10px 12px;border-radius:10px;border-bottom-left-radius:2px;font-size:14px}
+#chat-tools{display:flex;gap:6px;padding:12px;background:#3D3935;border-top:1px solid rgba(212,175,55,.2)}
+#chat-tools button{flex:1;padding:8px;border:1px solid rgba(212,175,55,.3);background:rgba(212,175,55,.08);color:#D4AF37;cursor:pointer;font-size:12px;border-radius:6px;font-weight:500;transition:all .3s}
+#chat-tools button:hover{background:rgba(212,175,55,.15);border-color:rgba(212,175,55,.5)}
+#chat-input-area{display:flex;border-top:1px solid rgba(212,175,55,.2);gap:0}
+#chat-input-area input{flex:1;padding:12px 16px;border:none;background:#3D3935;color:#D4AF37;outline:none;font-size:14px}
+#chat-input-area input::placeholder{color:rgba(212,175,55,.3)}
+#chat-input-area button{background:linear-gradient(135deg,#D4AF37,#8B0000);color:#F8F6F1;border:none;padding:12px 20px;cursor:pointer;font-weight:600;transition:all .3s}
+#chat-input-area button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(212,175,55,.3)}
 
 /* Gold shimmer */
 @keyframes shimmer{0%{background-position:-200% center}100%{background-position:200% center}}
@@ -77,19 +102,25 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
   <style>body { box-sizing: border-box; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
- <body class="h-full font-body text-stone-200 overflow-auto" style="background:#0F0E0A"><!-- NAV -->
+ <body class="h-full font-body text-stone-200 overflow-auto" style="background:#0F0E0A">
+  <!-- NAV -->
   <nav class="nav-glass fixed top-0 left-0 w-full z-50">
-   <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16"><a href="#home" class="flex items-center gap-2.5"> <img src="https://i.ibb.co/n8PjfhDJ/inheritance-nation-logo-transparent-4.png" alt="The Inheritance Nation Logo" class="h-16 w-auto drop-shadow-2xl" loading="lazy" onerror="this.style.display='none'">
-     <div class="text-center"><span id="nav-title" class="font-display text-lg font-bold text-yellow-300 leading-tight block">THE INHERITANCE NATION</span> <span id="nav-tagline" class="text-[10px] tracking-[.25em] text-yellow-200/70 uppercase block">The Home of Kings</span>
+   <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
+    <a href="#home" class="flex items-center gap-2.5"> <img src="https://i.ibb.co/n8PjfhDJ/inheritance-nation-logo-transparent-4.png" alt="The Inheritance Nation Logo" class="h-16 w-auto drop-shadow-2xl" loading="lazy" onerror="this.style.display='none'">
+     <div class="text-center">
+      <span id="nav-title" class="font-display text-lg font-bold text-yellow-300 leading-tight block">THE INHERITANCE NATION</span> <span id="nav-tagline" class="text-[10px] tracking-[.25em] text-yellow-200/70 uppercase block">The Home of Kings</span>
      </div></a>
-    <div class="hidden lg:flex items-center gap-6"><a href="#home" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Home</a> <a href="#about" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>About</a> <a href="#beliefs" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Beliefs</a> <a href="#journey" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Grow</a> <a href="#solutions" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Life Solutions</a> <a href="#digital" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Digital Church</a> <a href="#community" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Community</a> <a href="#leadership" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Leadership</a> <a href="#confessions" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Confessions</a> <a href="#impact" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Impact</a> <a href="#giving" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Give</a> <a href="#contact" class="btn-gold text-xs px-4 py-2 rounded-full">Connect</a>
+    <div class="hidden lg:flex items-center gap-6">
+     <a href="#home" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Home</a> <a href="#about" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>About</a> <a href="#beliefs" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Beliefs</a> <a href="#journey" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Grow</a> <a href="#solutions" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Life Solutions</a> <a href="#digital" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Digital Church</a> <a href="#community" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Community</a> <a href="#leadership" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Leadership</a> <a href="#confessions" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Confessions</a> <a href="#impact" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Impact</a> <a href="#giving" class="nav-link text-sm text-stone-300 hover:text-yellow-300" data-nav>Give</a> <a href="#contact" class="btn-gold text-xs px-4 py-2 rounded-full">Connect</a>
     </div><button id="mobile-toggle" class="lg:hidden text-yellow-300 p-2"><i data-lucide="menu" style="width:24px;height:24px"></i></button>
    </div>
   </nav><!-- Mobile Menu -->
   <div id="mobile-menu" class="mobile-menu fixed top-0 right-0 w-72 h-full z-[60] bg-[#0F0E0A] border-l border-yellow-700/30 p-6 overflow-auto">
-   <div class="flex justify-between items-center mb-8"><span class="font-display text-lg text-yellow-300 font-bold">Menu</span> <button id="mobile-close" class="text-yellow-300"><i data-lucide="x" style="width:24px;height:24px"></i></button>
+   <div class="flex justify-between items-center mb-8">
+    <span class="font-display text-lg text-yellow-300 font-bold">Menu</span> <button id="mobile-close" class="text-yellow-300"><i data-lucide="x" style="width:24px;height:24px"></i></button>
    </div>
-   <div class="flex flex-col gap-4"><a href="#home" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Home</a> <a href="#about" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Our Story</a> <a href="#beliefs" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Beliefs &amp; Culture</a> <a href="#journey" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">The King's Journey</a> <a href="#solutions" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Life Solutions</a> <a href="#digital" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Digital Church</a> <a href="#community" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Community</a> <a href="#leadership" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Leadership</a> <a href="#confessions" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Confessions</a> <a href="#impact" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Impact &amp; Missions</a> <a href="#giving" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Give</a> <a href="#contact" class="mobile-link text-yellow-400 font-semibold py-2">Connect With Us →</a>
+   <div class="flex flex-col gap-4">
+    <a href="#home" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Home</a> <a href="#about" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Our Story</a> <a href="#beliefs" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Beliefs &amp; Culture</a> <a href="#journey" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">The King's Journey</a> <a href="#solutions" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Life Solutions</a> <a href="#digital" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Digital Church</a> <a href="#community" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Community</a> <a href="#leadership" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Leadership</a> <a href="#confessions" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Confessions</a> <a href="#impact" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Impact &amp; Missions</a> <a href="#giving" class="mobile-link text-stone-300 hover:text-yellow-300 py-2 border-b border-yellow-700/20">Give</a> <a href="#contact" class="mobile-link text-yellow-400 font-semibold py-2">Connect With Us →</a>
    </div>
   </div><!-- OVERLAY -->
   <div id="mobile-overlay" class="fixed inset-0 bg-black/60 z-[55] hidden"></div><!-- ============================================ --> <!-- HERO --> <!-- ============================================ -->
@@ -98,12 +129,14 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     <div class="absolute inset-0" style="background:linear-gradient(135deg,rgba(15,14,10,.75) 0%,rgba(15,14,10,.72) 50%,rgba(15,14,10,.75) 100%)"></div>
    </div>
    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-24 text-center w-full z-10">
-    <div class="mb-8 fade-up flex items-center justify-center gap-3"><img src="https://i.ibb.co/n8PjfhDJ/inheritance-nation-logo-transparent-4.png" alt="The Inheritance Nation" class="h-20 w-auto drop-shadow-2xl crown-float" loading="lazy" onerror="this.style.display='none'">
+    <div class="mb-8 fade-up flex items-center justify-center gap-3">
+     <img src="https://i.ibb.co/n8PjfhDJ/inheritance-nation-logo-transparent-4.png" alt="The Inheritance Nation" class="h-20 w-auto drop-shadow-2xl crown-float" loading="lazy" onerror="this.style.display='none'">
     </div>
     <h1 id="hero-title" class="font-display text-5xl sm:text-6xl md:text-8xl font-bold leading-[1.05] mb-8 fade-up fade-up-d1" style="color:#F8F6F1;text-shadow:0 8px 32px rgba(212,175,55,.2)">You Were Born;<br>
       to Reign</h1>
     <p id="hero-subtitle" class="text-lg sm:text-xl md:text-2xl text-stone-300 max-w-3xl mx-auto mb-12 leading-relaxed fade-up fade-up-d2">A global kingdom family where you discover your identity, walk in purpose, and live the abundant life you were designed for.</p>
-    <div class="flex flex-wrap justify-center gap-5 fade-up fade-up-d3"><a href="#journey" class="btn-gold px-8 py-3.5 rounded-full text-base font-semibold">Begin Your Journey</a> <a href="#digital" class="btn-outline px-8 py-3.5 rounded-full text-base font-semibold">Experience Worship</a> <a href="#about" class="btn-outline px-8 py-3.5 rounded-full text-base font-semibold">Our Story</a>
+    <div class="flex flex-wrap justify-center gap-5 fade-up fade-up-d3">
+     <a href="#journey" class="btn-gold px-8 py-3.5 rounded-full text-base font-semibold">Begin Your Journey</a> <a href="#digital" class="btn-outline px-8 py-3.5 rounded-full text-base font-semibold">Experience Worship</a> <a href="#about" class="btn-outline px-8 py-3.5 rounded-full text-base font-semibold">Our Story</a>
     </div>
    </div>
   </section><!-- ============================================ --> <!-- WHO WE ARE (short) --> <!-- ============================================ -->
@@ -113,15 +146,18 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     <h2 id="about-heading-short" class="font-display text-3xl md:text-4xl font-bold text-yellow-100 mb-6">Not Just a Church; A Kingdom Movement.</h2>
     <p class="text-stone-400 max-w-2xl mx-auto leading-relaxed mb-10">The Inheritance Nation isn't built on tradition — it's built on truth. We exist to help every person discover who they really are: sons and daughters of the Most High, appointed for influence, purpose, and legacy. This is the home where kings are made.</p>
     <div class="grid md:grid-cols-3 gap-6">
-     <div class="card-dark rounded-2xl p-6 text-center"><span class="text-3xl mb-3 block">🔥</span>
+     <div class="card-dark rounded-2xl p-6 text-center">
+      <span class="text-3xl mb-3 block">🔥</span>
       <h3 class="font-display text-lg font-semibold text-yellow-200 mb-2">Identity-First</h3>
       <p class="text-sm text-stone-400">We don't start with rules. We start with who you are. When you know your identity, everything changes.</p>
      </div>
-     <div class="card-dark rounded-2xl p-6 text-center"><span class="text-3xl mb-3 block">🌍</span>
+     <div class="card-dark rounded-2xl p-6 text-center">
+      <span class="text-3xl mb-3 block">🌍</span>
       <h3 class="font-display text-lg font-semibold text-yellow-200 mb-2">Life-Integrated</h3>
       <p class="text-sm text-stone-400">Faith isn't a Sunday event — it's a Monday strategy. We equip you for boardrooms, bedrooms, and beyond.</p>
      </div>
-     <div class="card-dark rounded-2xl p-6 text-center"><span class="text-3xl mb-3 block">👑</span>
+     <div class="card-dark rounded-2xl p-6 text-center">
+      <span class="text-3xl mb-3 block">👑</span>
       <h3 class="font-display text-lg font-semibold text-yellow-200 mb-2">Kingdom-Minded</h3>
       <p class="text-sm text-stone-400">We think in generations, not just moments. Every seed sown here is designed to outlive you.</p>
      </div>
@@ -136,22 +172,19 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
      <div class="card-dark rounded-xl p-5">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-yellow-400"><i data-lucide="sun" style="width:20px;height:20px"></i></span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-yellow-400"><i data-lucide="sun" style="width:20px;height:20px"></i></span>
        <h3 class="font-semibold text-yellow-200 text-sm">Sunday Encounter</h3>
       </div>
       <p class="text-xs text-stone-400" id="service-time-display">Worship &amp; the Word — Sundays at 9:00 AM</p>
      </div>
      <div class="card-dark rounded-xl p-5">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-yellow-400"><i data-lucide="headphones" style="width:20px;height:20px"></i></span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-yellow-400"><i data-lucide="headphones" style="width:20px;height:20px"></i></span>
        <h3 class="font-semibold text-yellow-200 text-sm">Daily Devotional</h3>
       </div>
       <p class="text-xs text-stone-400">A voice in your ear every morning</p>
      </div>
      <div class="card-dark rounded-xl p-5">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-yellow-400"><i data-lucide="heart" style="width:20px;height:20px"></i></span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-yellow-400"><i data-lucide="heart" style="width:20px;height:20px"></i></span>
        <h3 class="font-semibold text-yellow-200 text-sm">Prayer Wall</h3>
       </div>
       <p class="text-xs text-stone-400">Submit your prayer and our team stands with you — 24/7</p>
@@ -340,7 +373,8 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       </div>
      </div>
     </div>
-    <div class="text-center mt-10"><a href="#contact" class="btn-gold px-8 py-3 rounded-full text-sm inline-block">Start Your Journey</a>
+    <div class="text-center mt-10">
+     <a href="#contact" class="btn-gold px-8 py-3 rounded-full text-sm inline-block">Start Your Journey</a>
     </div>
    </div>
   </section><!-- ============================================ --> <!-- FAITH & LIFE SOLUTIONS HUB --> <!-- ============================================ -->
@@ -353,8 +387,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="solutions-grid">
      <div class="card-dark rounded-2xl p-6 cursor-pointer group" onclick="toggleSolution(this)">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-2xl">🔥</span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-2xl">🔥</span>
        <h3 class="font-display text-lg font-semibold text-amber-200">Faith &amp; Purpose</h3>
       </div>
       <p class="text-sm text-stone-400 leading-relaxed">Feeling stuck? Uncertain about your calling? You were not created to wander. Let's uncover the blueprint for your life.</p>
@@ -363,8 +396,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       </div>
      </div>
      <div class="card-dark rounded-2xl p-6 cursor-pointer group" onclick="toggleSolution(this)">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-2xl">📈</span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-2xl">📈</span>
        <h3 class="font-display text-lg font-semibold text-amber-200">Leadership &amp; Career</h3>
       </div>
       <p class="text-sm text-stone-400 leading-relaxed">God didn't call you to be average at work. Discover how kingdom principles create real-world success and lasting influence.</p>
@@ -373,8 +405,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       </div>
      </div>
      <div class="card-dark rounded-2xl p-6 cursor-pointer group" onclick="toggleSolution(this)">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-2xl">💞</span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-2xl">💞</span>
        <h3 class="font-display text-lg font-semibold text-amber-200">Marriage &amp; Family</h3>
       </div>
       <p class="text-sm text-stone-400 leading-relaxed">The family is the first kingdom. Whether you're building, rebuilding, or preparing — there's wisdom for your season.</p>
@@ -383,8 +414,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       </div>
      </div>
      <div class="card-dark rounded-2xl p-6 cursor-pointer group" onclick="toggleSolution(this)">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-2xl">💚</span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-2xl">💚</span>
        <h3 class="font-display text-lg font-semibold text-amber-200">Healing &amp; Restoration</h3>
       </div>
       <p class="text-sm text-stone-400 leading-relaxed">Past wounds don't define your future. Come as you are, and let the Healer do what only He can do — make you whole again.</p>
@@ -393,8 +423,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       </div>
      </div>
      <div class="card-dark rounded-2xl p-6 cursor-pointer group" onclick="toggleSolution(this)">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-2xl">💰</span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-2xl">💰</span>
        <h3 class="font-display text-lg font-semibold text-amber-200">Wealth &amp; Stewardship</h3>
       </div>
       <p class="text-sm text-stone-400 leading-relaxed">God's plan includes provision. Learn to build, manage, and multiply wealth with a kingdom mindset — not the world's playbook.</p>
@@ -403,8 +432,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       </div>
      </div>
      <div class="card-dark rounded-2xl p-6 cursor-pointer group" onclick="toggleSolution(this)">
-      <div class="flex items-center gap-3 mb-3">
-       <span class="text-2xl">🧠</span>
+      <div class="flex items-center gap-3 mb-3"><span class="text-2xl">🧠</span>
        <h3 class="font-display text-lg font-semibold text-amber-200">Mental &amp; Emotional Strength</h3>
       </div>
       <p class="text-sm text-stone-400 leading-relaxed">Your mind is a battlefield. We don't ignore the struggle — we equip you with truth, tools, and community to stand strong.</p>
@@ -424,29 +452,25 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     </div>
     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
      <div class="card-dark rounded-2xl p-6 text-center cursor-pointer hover:bg-opacity-80 transition-all" onclick="window.open('https://www.youtube.com/@theinheritancenation', '_blank')">
-      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
-       <i data-lucide="play-circle" class="text-amber-400" style="width:28px;height:28px"></i>
+      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4"><i data-lucide="play-circle" class="text-amber-400" style="width:28px;height:28px"></i>
       </div>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Online Worship &amp; Teachings</h3>
       <p class="text-sm text-stone-400">Stream live services and access a library of messages designed to transform your thinking.</p>
      </div>
      <div class="card-dark rounded-2xl p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
-       <i data-lucide="hand" class="text-amber-400" style="width:28px;height:28px"></i>
+      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4"><i data-lucide="hand" class="text-amber-400" style="width:28px;height:28px"></i>
       </div>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Prayer Support</h3>
       <p class="text-sm text-stone-400">You're never alone. Submit a prayer request anytime, and our team will stand with you in faith.</p>
      </div>
      <div class="card-dark rounded-2xl p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
-       <i data-lucide="mic" class="text-amber-400" style="width:28px;height:28px"></i>
+      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4"><i data-lucide="mic" class="text-amber-400" style="width:28px;height:28px"></i>
       </div>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Voice Devotionals</h3>
       <p class="text-sm text-stone-400">Start your morning with a word. Short, powerful audio devotionals delivered to you daily.</p>
      </div>
      <div class="card-dark rounded-2xl p-6 text-center sm:col-span-2 lg:col-span-2">
-      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
-       <i data-lucide="globe" class="text-amber-400" style="width:28px;height:28px"></i>
+      <div class="w-14 h-14 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-4"><i data-lucide="globe" class="text-amber-400" style="width:28px;height:28px"></i>
       </div>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Global Community Connection</h3>
       <p class="text-sm text-stone-400">Connect with your kingdom family across continents. Small groups, forums, and events — all online, all real.</p>
@@ -462,19 +486,23 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
      <p class="text-stone-400 max-w-xl mx-auto">This isn't membership. This is family. Kingdom relationships that sharpen you, support you, and send you into your purpose.</p>
     </div>
     <div class="grid sm:grid-cols-2 gap-6">
-     <div class="card-dark rounded-2xl p-6"><span class="text-3xl mb-3 block">🏘️</span>
+     <div class="card-dark rounded-2xl p-6">
+      <span class="text-3xl mb-3 block">🏘️</span>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Small Groups</h3>
       <p class="text-sm text-stone-400">Intimate circles where truth is shared, burdens are carried, and life-changing conversations happen. Find your group — in person or online.</p>
      </div>
-     <div class="card-dark rounded-2xl p-6"><span class="text-3xl mb-3 block">🦁</span>
+     <div class="card-dark rounded-2xl p-6">
+      <span class="text-3xl mb-3 block">🦁</span>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Leadership Communities</h3>
       <p class="text-sm text-stone-400">Iron sharpens iron. Our leadership circles gather entrepreneurs, professionals, and visionaries to grow in kingdom influence together.</p>
      </div>
-     <div class="card-dark rounded-2xl p-6"><span class="text-3xl mb-3 block">🤲</span>
+     <div class="card-dark rounded-2xl p-6">
+      <span class="text-3xl mb-3 block">🤲</span>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Service &amp; Impact Teams</h3>
       <p class="text-sm text-stone-400">Use your gifts. Serve your world. Join a team that's making a real difference — from media to missions, hospitality to healing.</p>
      </div>
-     <div class="card-dark rounded-2xl p-6"><span class="text-3xl mb-3 block">🌟</span>
+     <div class="card-dark rounded-2xl p-6">
+      <span class="text-3xl mb-3 block">🌟</span>
       <h3 class="font-display text-lg font-semibold text-amber-200 mb-2">Next Generation</h3>
       <p class="text-sm text-stone-400">Our youth and young adults aren't the future — they're the now. We invest in the next generation of kingdom leaders, thinkers, and world-changers.</p>
      </div>
@@ -492,22 +520,19 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     </div>
     <div class="grid sm:grid-cols-3 gap-6">
      <div class="card-dark rounded-2xl p-5 text-center">
-      <div class="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3">
-       <i data-lucide="shield-check" class="text-amber-400" style="width:22px;height:22px"></i>
+      <div class="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3"><i data-lucide="shield-check" class="text-amber-400" style="width:22px;height:22px"></i>
       </div>
       <h3 class="text-sm font-semibold text-amber-200 mb-1">Integrity-Led</h3>
       <p class="text-xs text-stone-400">What we say and what we do are the same. Always.</p>
      </div>
      <div class="card-dark rounded-2xl p-5 text-center">
-      <div class="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3">
-       <i data-lucide="heart-handshake" class="text-amber-400" style="width:22px;height:22px"></i>
+      <div class="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3"><i data-lucide="heart-handshake" class="text-amber-400" style="width:22px;height:22px"></i>
       </div>
       <h3 class="text-sm font-semibold text-amber-200 mb-1">People-First</h3>
       <p class="text-xs text-stone-400">Programs don't change the world. People do.</p>
      </div>
      <div class="card-dark rounded-2xl p-5 text-center">
-      <div class="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3">
-       <i data-lucide="compass" class="text-amber-400" style="width:22px;height:22px"></i>
+      <div class="w-12 h-12 rounded-full bg-amber-900/30 flex items-center justify-center mx-auto mb-3"><i data-lucide="compass" class="text-amber-400" style="width:22px;height:22px"></i>
       </div>
       <h3 class="text-sm font-semibold text-amber-200 mb-1">Vision-Driven</h3>
       <p class="text-xs text-stone-400">We see the future and build toward it, together.</p>
@@ -543,8 +568,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     <p class="text-xs tracking-[.3em] uppercase text-amber-500/70 mb-3">Sow Into the Kingdom</p>
     <h2 class="font-display text-3xl md:text-4xl font-bold text-amber-100 mb-4">Invest in Eternity.</h2>
     <p class="text-stone-400 max-w-xl mx-auto mb-10">When you give to The Inheritance Nation, you're not just funding a church — you're fueling a movement. Every seed sown builds leaders, transforms communities, and leaves a legacy for generations.</p>
-    <div class="mb-10 max-w-2xl mx-auto" id="giving-image">
-     <img src="https://i.ibb.co/vCdTtN5w/file-00000000d36071f4909f87c4ebd78bbe.png" alt="Invest in Eternity" class="w-full rounded-2xl shadow-lg" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none';">
+    <div class="mb-10 max-w-2xl mx-auto" id="giving-image"><img src="https://i.ibb.co/vCdTtN5w/file-00000000d36071f4909f87c4ebd78bbe.png" alt="Invest in Eternity" class="w-full rounded-2xl shadow-lg" loading="lazy" onerror="console.error('Image failed to load:', this.src); this.style.display='none';">
     </div>
     <div class="card-dark rounded-2xl p-8 max-w-lg mx-auto" style="border-color:rgba(197,162,85,.2)">
      <p class="font-display text-lg text-amber-200 italic mb-2">"Give, and it will be given to you. A good measure, pressed down, shaken together and running over."</p>
@@ -559,7 +583,8 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
      <h2 class="font-display text-3xl md:text-4xl font-bold text-amber-100 mb-4">Our Inheritance Confession.</h2>
      <p class="text-stone-400 max-w-xl mx-auto">Speak these declarations over your life. Words have power. When you align your confession with kingdom truth, you align your reality with heaven's design.</p>
     </div>
-    <div class="space-y-6" id="confessions-container"><!-- Inheritance Confession -->
+    <div class="space-y-6" id="confessions-container">
+     <!-- Inheritance Confession -->
      <div class="card-dark rounded-2xl p-8 cursor-pointer group transition-all" onclick="toggleConfession(this)">
       <div class="flex items-start justify-between mb-4">
        <h3 class="font-display text-xl font-semibold text-amber-200">Our Inheritance Confession</h3><i data-lucide="chevron-down" class="text-amber-400 group-[.expanded]:rotate-180 transition-transform" style="width:20px;height:20px"></i>
@@ -641,30 +666,27 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
      <p class="text-stone-400 max-w-xl mx-auto">Whether you need prayer, want to join the family, or just want to talk — we're here. No pressure, just love.</p>
     </div>
     <div class="grid md:grid-cols-2 gap-8">
-     <div class="space-y-4"><a href="#contact" class="card-dark rounded-xl p-5 flex items-center gap-4 block">
-       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="message-circle" class="text-amber-400" style="width:20px;height:20px"></i>
+     <div class="space-y-4">
+      <a href="#contact" class="card-dark rounded-xl p-5 flex items-center gap-4 block">
+       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0"><i data-lucide="message-circle" class="text-amber-400" style="width:20px;height:20px"></i>
        </div>
        <div>
         <h3 class="text-sm font-semibold text-amber-200">Talk to a Pastor</h3>
         <p class="text-xs text-stone-400">Schedule a confidential conversation. We listen first.</p>
        </div></a> <a href="#contact" class="card-dark rounded-xl p-5 flex items-center gap-4 block">
-       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="hand" class="text-amber-400" style="width:20px;height:20px"></i>
+       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0"><i data-lucide="hand" class="text-amber-400" style="width:20px;height:20px"></i>
        </div>
        <div>
         <h3 class="text-sm font-semibold text-amber-200">Submit a Prayer Request</h3>
         <p class="text-xs text-stone-400">Let us stand in faith with you. Your prayer matters.</p>
        </div></a> <a href="#community" class="card-dark rounded-xl p-5 flex items-center gap-4 block">
-       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="users" class="text-amber-400" style="width:20px;height:20px"></i>
+       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0"><i data-lucide="users" class="text-amber-400" style="width:20px;height:20px"></i>
        </div>
        <div>
         <h3 class="text-sm font-semibold text-amber-200">Join the Community</h3>
         <p class="text-xs text-stone-400">Find your place in the family. Online or in person.</p>
        </div></a> <a href="#journey" class="card-dark rounded-xl p-5 flex items-center gap-4 block">
-       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-        <i data-lucide="sparkles" class="text-amber-400" style="width:20px;height:20px"></i>
+       <div class="w-11 h-11 rounded-full bg-amber-900/30 flex items-center justify-center flex-shrink-0"><i data-lucide="sparkles" class="text-amber-400" style="width:20px;height:20px"></i>
        </div>
        <div>
         <h3 class="text-sm font-semibold text-amber-200">Start Your Faith Journey</h3>
@@ -673,11 +695,14 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
      </div>
      <div class="card-dark rounded-2xl p-8" style="border-color:rgba(197,162,85,.2)">
       <form id="contact-form" class="space-y-4">
-       <div><label for="name" class="block text-xs font-semibold text-amber-200 mb-2">Name</label> <input type="text" id="name" name="name" placeholder="Your name" class="w-full bg-amber-950/20 border border-amber-900/30 rounded-lg px-4 py-2.5 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/50" required>
+       <div>
+        <label for="name" class="block text-xs font-semibold text-amber-200 mb-2">Name</label> <input type="text" id="name" name="name" placeholder="Your name" class="w-full bg-amber-950/20 border border-amber-900/30 rounded-lg px-4 py-2.5 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/50" required>
        </div>
-       <div><label for="email" class="block text-xs font-semibold text-amber-200 mb-2">Email</label> <input type="email" id="email" name="email" placeholder="your@email.com" class="w-full bg-amber-950/20 border border-amber-900/30 rounded-lg px-4 py-2.5 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/50" required>
+       <div>
+        <label for="email" class="block text-xs font-semibold text-amber-200 mb-2">Email</label> <input type="email" id="email" name="email" placeholder="your@email.com" class="w-full bg-amber-950/20 border border-amber-900/30 rounded-lg px-4 py-2.5 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/50" required>
        </div>
-       <div><label for="message" class="block text-xs font-semibold text-amber-200 mb-2">Message</label> <textarea id="message" name="message" placeholder="Your message..." rows="4" class="w-full bg-amber-950/20 border border-amber-900/30 rounded-lg px-4 py-2.5 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/50" required></textarea>
+       <div>
+        <label for="message" class="block text-xs font-semibold text-amber-200 mb-2">Message</label> <textarea id="message" name="message" placeholder="Your message..." rows="4" class="w-full bg-amber-950/20 border border-amber-900/30 rounded-lg px-4 py-2.5 text-sm text-stone-200 placeholder-stone-600 focus:outline-none focus:border-amber-500/50" required></textarea>
        </div><button type="submit" class="btn-gold w-full py-2.5 rounded-lg text-sm font-semibold">Send Message</button>
        <div id="form-success" class="hidden bg-green-900/30 border border-green-500/30 rounded-lg p-3 text-center">
         <p class="text-xs text-green-300">✓ Message received. We'll connect with you soon!</p>
@@ -691,7 +716,8 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
    </div>
   </section><!-- ============================================ --> <!-- CLOSING DECLARATION --> <!-- ============================================ -->
   <section class="w-full py-12 reveal-section pattern-bg" style="background:linear-gradient(180deg,#14110B,#0F0C08);border-top:1px solid rgba(197,162,85,.1)">
-   <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center"><img src="https://i.ibb.co/n8PjfhDJ/inheritance-nation-logo-transparent-4.png" alt="The Inheritance Nation" class="h-40 w-auto mx-auto drop-shadow-2xl crown-float mb-6" loading="lazy" onerror="this.style.display='none'">
+   <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+    <img src="https://i.ibb.co/n8PjfhDJ/inheritance-nation-logo-transparent-4.png" alt="The Inheritance Nation" class="h-40 w-auto mx-auto drop-shadow-2xl crown-float mb-6" loading="lazy" onerror="this.style.display='none'">
     <h2 class="font-display text-3xl md:text-5xl font-bold leading-tight mb-8" style="color:#F5E6C8">You are not ordinary;<br><span class="gold-shimmer">You are chosen.</span><br>
       You are called;<br><span class="text-amber-400">Welcome home, King.</span></h2>
     <p class="text-stone-400 max-w-md mx-auto mb-2">Your inheritance has been waiting. Your throne has been prepared. Step into everything you were born to be.</p>
@@ -701,18 +727,35 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
   <footer class="w-full py-10" style="background:#0A0806;border-top:1px solid rgba(197,162,85,.08)">
    <div class="max-w-5xl mx-auto px-4 sm:px-6">
     <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-     <div class="flex items-center gap-2"><span class="text-lg">👑</span> <span class="font-display text-sm font-bold text-amber-200">THE INHERITANCE NATION</span>
+     <div class="flex items-center gap-2">
+      <span class="text-lg">👑</span> <span class="font-display text-sm font-bold text-amber-200">THE INHERITANCE NATION</span>
      </div>
      <div class="text-center">
       <p class="text-xs text-stone-600">© 2025 The Inheritance Nation. The Home of Kings. All rights reserved.</p>
      </div>
-     <div class="flex gap-4"><a href="https://www.instagram.com/tination_kings?igsh=MWVlNmdubTRpYnptMA==" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="instagram" style="width:18px;height:18px"></i></a> <a href="https://www.youtube.com/@theinheritancenation" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="youtube" style="width:18px;height:18px"></i></a> <a href="https://x.com/tination_kings" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="twitter" style="width:18px;height:18px"></i></a> <a href="https://facebook.com/tinationkings" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="facebook" style="width:18px;height:18px"></i></a>
+     <div class="flex gap-4">
+      <a href="https://www.instagram.com/tination_kings?igsh=MWVlNmdubTRpYnptMA==" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="instagram" style="width:18px;height:18px"></i></a> <a href="https://www.youtube.com/@theinheritancenation" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="youtube" style="width:18px;height:18px"></i></a> <a href="https://x.com/tination_kings" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="twitter" style="width:18px;height:18px"></i></a> <a href="https://facebook.com/tinationkings" target="_blank" rel="noopener noreferrer" class="text-stone-500 hover:text-amber-400 transition-colors"><i data-lucide="facebook" style="width:18px;height:18px"></i></a>
      </div>
     </div>
    </div>
-  </footer><!-- Lucide Icons -->
+  </footer><!-- AI Chat Widget -->
+  <div id="chat-widget" class="minimized">
+   <div id="chat-header"><span id="chat-title"><i data-lucide="sparkles" style="width:16px;height:16px;display:inline;margin-right:6px;vertical-align:middle"></i><span id="chat-widget-name">TI NATION AI</span></span> <button id="chat-minimize-btn" onclick="toggleMinimize()" title="Open chat"><i data-lucide="sparkles" style="width:24px;height:24px"></i></button>
+   </div>
+   <div id="chat-messages">
+    <div class="chat-message ai">
+     <strong id="chat-welcome-msg">Welcome to THE INHERITANCE NATION.</strong><br><span id="chat-welcome-detail">How can I help you discover your purpose today?</span>
+    </div>
+   </div>
+   <div id="chat-tools">
+    <button onclick="addBibleVerse()"><i data-lucide="book-open" style="width:14px;height:14px;display:inline;margin-right:4px;vertical-align:middle"></i>Bible Verse</button> <button onclick="addPrayer()"><i data-lucide="hands-praying" style="width:14px;height:14px;display:inline;margin-right:4px;vertical-align:middle"></i>Prayer</button>
+   </div>
+   <div id="chat-input-area">
+    <input id="chat-input" placeholder="Ask about purpose, faith, or the church..." onkeypress="if(event.key==='Enter')sendMessage()"> <button onclick="sendMessage()">Send</button>
+   </div>
+  </div>
   <script>
-    // Config & Element SDK
+    // Config
     const defaultConfig = {
       hero_title: 'You Were Born to Reign',
       hero_subtitle: 'A global kingdom family where you discover your identity, walk in purpose, and live the abundant life you were designed for.',
@@ -728,9 +771,17 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       accent_wine_color: '#6B2C3E',
       light_brown_color: '#E8C8D8',
       font_family: 'Cormorant Garamond',
-      font_size: 16
+      font_size: 16,
+      ai_assistant_name: 'TI NATION AI Assistant',
+      ai_welcome_message: 'Welcome to THE INHERITANCE NATION. How can I help you discover your purpose today?',
+      ai_placeholder: 'Ask about purpose, faith, or the church...',
+      ai_width: '320',
+      ai_height: '240',
+      ai_position_bottom: '20',
+      ai_position_right: '20'
     };
 
+    // Hero images array
     const heroImages = [
       'https://i.ibb.co/R4H2tZ43/IMG-. -753.png',
       'https://i.ibb.co/PvcwNjyz/IMG-. -277.png',
@@ -746,6 +797,7 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       'https://i.ibb.co/XZ2pQBvr/IMG-. -621.png'
     ];
 
+    // Hero image slideshow
     let currentImageIndex = 0;
 
     function setHeroImage(index) {
@@ -760,37 +812,67 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
       currentImageIndex = (currentImageIndex + 1) % heroImages.length;
     }
 
+    // Start slideshow on page load
     function startHeroSlideshow() {
       rotateHeroImage();
       setInterval(rotateHeroImage, 4000);
     }
 
+    // Element SDK
     window.elementSdk.init({
       defaultConfig,
       onConfigChange: async (config) => {
         const c = { ...defaultConfig, ...config };
+
+        // Text
         document.getElementById('hero-title').innerHTML = c.hero_title.replace(/\n/g,'<br>');
         document.getElementById('hero-subtitle').textContent = c.hero_subtitle;
         document.getElementById('hero-tagline').textContent = c.tagline;
         document.getElementById('nav-tagline').textContent = c.tagline;
         document.getElementById('about-heading-short').innerHTML = c.about_heading.replace(/\n/g,'<br>');
-        document.getElementById('service-time-display').textContent = 'Worship & the Word — ' + c.service_time;
+        const displayTime = 'Worship & the Word — ' + c.service_time;
+        document.getElementById('service-time-display').textContent = displayTime;
         document.getElementById('service-time-footer').textContent = c.service_time;
 
+        // AI Assistant config
+        document.getElementById('chat-widget-name').textContent = c.ai_assistant_name;
+        document.getElementById('chat-input').placeholder = c.ai_placeholder;
+        const welcomeMsg = document.getElementById('chat-welcome-msg');
+        const welcomeDetail = document.getElementById('chat-welcome-detail');
+        if (welcomeMsg && welcomeDetail) {
+          const parts = c.ai_welcome_message.split('.');
+          welcomeMsg.textContent = (parts[0] || 'Welcome').trim() + '.';
+          welcomeDetail.textContent = parts.slice(1).join('.').trim();
+        }
+
+        // Chat box positioning and sizing
+        const chatWidget = document.getElementById('chat-widget');
+        if (chatWidget) {
+          chatWidget.style.setProperty('--chat-width', c.ai_width + 'px');
+          chatWidget.style.setProperty('--chat-height', c.ai_height + 'px');
+          chatWidget.style.setProperty('--chat-bottom', c.ai_position_bottom + 'px');
+          chatWidget.style.setProperty('--chat-right', c.ai_position_right + 'px');
+        }
+
+        // Colors
         document.body.style.background = c.background_color;
         document.querySelectorAll('.card-dark').forEach(el => {
           el.style.background = hexToRgba(c.surface_color, 0.6);
         });
         document.getElementById('hero-title').style.color = c.text_color;
+
+        // Gold elements
         document.querySelectorAll('.btn-gold').forEach(el => {
           el.style.background = `linear-gradient(135deg, ${c.primary_action_color}, ${c.secondary_action_color})`;
         });
 
+        // Font
         const ff = c.font_family + ', serif';
         document.querySelectorAll('.font-display').forEach(el => {
           el.style.fontFamily = ff;
         });
 
+        // Font size
         const bs = c.font_size;
         document.querySelectorAll('p:not(.text-xs)').forEach(el => {
           if (!el.classList.contains('text-xs')) el.style.fontSize = bs + 'px';
@@ -800,16 +882,64 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
         const c = { ...defaultConfig, ...config };
         return {
           recolorables: [
-            { get: () => c.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
-            { get: () => c.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
-            { get: () => c.light_brown_color, set: (v) => { config.light_brown_color = v; window.elementSdk.setConfig({ light_brown_color: v }); } },
-            { get: () => c.primary_action_color, set: (v) => { config.primary_action_color = v; window.elementSdk.setConfig({ primary_action_color: v }); } },
-            { get: () => c.secondary_action_color, set: (v) => { config.secondary_action_color = v; window.elementSdk.setConfig({ secondary_action_color: v }); } },
-            { get: () => c.accent_wine_color, set: (v) => { config.accent_wine_color = v; window.elementSdk.setConfig({ accent_wine_color: v }); } }
+            {
+              get: () => c.background_color,
+              set: (v) => {
+                config.background_color = v;
+                window.elementSdk.setConfig({ background_color: v });
+              }
+            },
+            {
+              get: () => c.surface_color,
+              set: (v) => {
+                config.surface_color = v;
+                window.elementSdk.setConfig({ surface_color: v });
+              }
+            },
+            {
+              get: () => c.light_brown_color,
+              set: (v) => {
+                config.light_brown_color = v;
+                window.elementSdk.setConfig({ light_brown_color: v });
+              }
+            },
+            {
+              get: () => c.primary_action_color,
+              set: (v) => {
+                config.primary_action_color = v;
+                window.elementSdk.setConfig({ primary_action_color: v });
+              }
+            },
+            {
+              get: () => c.secondary_action_color,
+              set: (v) => {
+                config.secondary_action_color = v;
+                window.elementSdk.setConfig({ secondary_action_color: v });
+              }
+            },
+            {
+              get: () => c.accent_wine_color,
+              set: (v) => {
+                config.accent_wine_color = v;
+                window.elementSdk.setConfig({ accent_wine_color: v });
+              }
+            }
           ],
           borderables: [],
-          fontEditable: { get: () => c.font_family, set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
-          fontSizeable: { get: () => c.font_size, set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+          fontEditable: {
+            get: () => c.font_family,
+            set: (v) => {
+              config.font_family = v;
+              window.elementSdk.setConfig({ font_family: v });
+            }
+          },
+          fontSizeable: {
+            get: () => c.font_size,
+            set: (v) => {
+              config.font_size = v;
+              window.elementSdk.setConfig({ font_size: v });
+            }
+          }
         };
       },
       mapToEditPanelValues: (config) => {
@@ -820,7 +950,14 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
           ['tagline', c.tagline],
           ['about_heading', c.about_heading],
           ['contact_email', c.contact_email],
-          ['service_time', c.service_time]
+          ['service_time', c.service_time],
+          ['ai_assistant_name', c.ai_assistant_name],
+          ['ai_welcome_message', c.ai_welcome_message],
+          ['ai_placeholder', c.ai_placeholder],
+          ['ai_width', c.ai_width],
+          ['ai_height', c.ai_height],
+          ['ai_position_bottom', c.ai_position_bottom],
+          ['ai_position_right', c.ai_position_right]
         ]);
       }
     });
@@ -847,9 +984,16 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     mobileOverlay.addEventListener('click', closeMobile);
     document.querySelectorAll('.mobile-link').forEach(l => l.addEventListener('click', closeMobile));
 
-    // Solutions & Confessions toggle
-    function toggleSolution(el) { el.classList.toggle('expanded'); }
-    function toggleConfession(el) { el.classList.toggle('expanded'); lucide.createIcons(); }
+    // Solutions toggle
+    function toggleSolution(el) {
+      el.classList.toggle('expanded');
+    }
+
+    // Confessions toggle
+    function toggleConfession(el) {
+      el.classList.toggle('expanded');
+      lucide.createIcons();
+    }
 
     // Form
     document.getElementById('contact-form').addEventListener('submit', function(e) {
@@ -866,7 +1010,9 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
     // Scroll reveal
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add('visible');
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+        }
       });
     }, { threshold: 0.1 });
 
@@ -887,6 +1033,135 @@ html,body{height:100%;margin:0;scroll-behavior:smooth}
 
     lucide.createIcons();
     startHeroSlideshow();
+
+    // AI Chat Functions
+    function addMessage(text, type) {
+      const messagesBox = document.getElementById('chat-messages');
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `chat-message ${type}`;
+      msgDiv.innerHTML = text;
+      messagesBox.appendChild(msgDiv);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+    }
+
+    function toggleMinimize() {
+      const widget = document.getElementById('chat-widget');
+      const btn = document.getElementById('chat-minimize-btn');
+      widget.classList.toggle('minimized');
+      
+      // Update button icon
+      if (widget.classList.contains('minimized')) {
+        btn.innerHTML = '<i data-lucide="sparkles" style="width:24px;height:24px"></i>';
+      } else {
+        btn.innerHTML = '<i data-lucide="chevron-up" style="width:18px;height:18px"></i>';
+      }
+      lucide.createIcons();
+    }
+
+    function sendMessage() {
+      const input = document.getElementById('chat-input');
+      const question = input.value.trim();
+      if (!question) return;
+
+      addMessage(question, 'user');
+      input.value = '';
+
+      setTimeout(() => {
+        const response = getAIResponse(question);
+        addMessage(response, 'ai');
+      }, 600);
+    }
+
+    function getAIResponse(q) {
+      q = q.toLowerCase();
+      
+      // Enhanced keyword matching for smarter responses
+      const keywords = {
+        // Identity & Purpose
+        'who am i|identity|who i am|purpose|calling|destiny': 'You are chosen, redeemed, and appointed. Your identity in Christ is the foundation for everything. At THE INHERITANCE NATION, we help you discover the blueprint for your life—you\'re not defined by your past, but by who God says you are. Every gift and experience has been preparing you for this moment.',
+        
+        // Inheritance
+        'inheritance|what is inheritance|inherit|birthright|heir|co-heir': 'Your inheritance is your divine birthright as a child of God. You\'re not a servant begging for crumbs—you\'re seated at the table as a king. The Inheritance Nation exists to help you discover and walk boldly in everything the Father has prepared for you.',
+        
+        // Leadership & Influence
+        'leadership|leader|influence|authority|lead': 'Kingdom leadership isn\'t about titles or power—it\'s about servant influence and integrity. We believe leaders who move with heaven\'s authority transform every sphere they occupy: boardrooms, families, communities. Iron sharpens iron. Join our leadership circles to grow alongside visionaries and entrepreneurs.',
+        
+        // Faith & Daily Life
+        'faith|trust god|believe|god|jesus|christ|trust': 'Faith isn\'t a Sunday event—it\'s a Monday advantage. Your faith works in your career, marriage, relationships, and every decision. That\'s kingdom living. We teach faith that produces real results in real life, not just religious theory.',
+        
+        // Services & Worship
+        'service|worship|when do you meet|sunday|gathering|gathering time|meeting': 'We gather every Sunday at 9:00 AM for powerful worship and kingdom teaching. But church doesn\'t stop at the building. We stream online, offer daily devotionals, prayer support, and small groups—so the Kingdom is always accessible, wherever you are.',
+        
+        // Prayer & Support
+        'prayer|pray|prayer request|need prayer|help me|struggling': 'Prayer changes things. You\'re never alone. Submit a prayer request anytime, and our team will stand with you in faith. We also have a 24/7 prayer wall and pastoral care. What\'s on your heart? We\'re here to listen.',
+        
+        // Community & Connection
+        'community|small group|group|connect|belong|friends|family': 'You belong here. Our community includes small groups (intimate circles where real life happens), leadership communities (iron sharpening iron), and service teams. Whether online or in person, find your kingdom family and grow alongside people who believe in your potential.',
+        
+        // Healing & Restoration
+        'heal|healing|broken|hurt|pain|struggling|past|trauma|forgive|forgiveness': 'Past wounds don\'t define your future. Come as you are. The Healer restores what was broken and makes you whole. We provide pastoral care, counseling support, and a safe community where real healing happens. Your pain has a purpose.',
+        
+        // Marriage & Family
+        'marriage|married|wife|husband|divorce|family|children|kids|parent': 'The family is the first kingdom. Whether you\'re building a strong marriage, navigating challenges, raising children, or rebuilding after hurt—there\'s kingdom wisdom for your season. We offer marriage counseling, family resources, and support groups designed to strengthen your household.',
+        
+        // Career & Wealth
+        'career|job|work|business|wealth|money|finance|financial|entrepreneur|startup': 'God didn\'t call you to be average at work. Learn how kingdom principles create real success, lasting influence, and abundance. We have resources for entrepreneurs, professionals, and business leaders who want to honor God while building something great.',
+        
+        // Digital & Online
+        'online|stream|youtube|watch|digital|remote|from home': 'Church without walls. Stream live services on our YouTube channel, access our message library, join online small groups, submit prayer requests, and connect with our global community—24/7. Your faith journey doesn\'t pause when you\'re not in the building.',
+        
+        // Youth & Next Generation
+        'youth|young|teen|student|next generation|kids|children': 'Our youth and young adults aren\'t the future—they\'re the NOW. We invest in the next generation of kingdom leaders, thinkers, and world-changers. Fresh energy, revolutionary thinking, divine purpose—that\'s the next gen at The Inheritance Nation.',
+        
+        // Giving & Sowing
+        'give|giving|donate|sow|seed|offering|tithe|financial|support': 'When you give to The Inheritance Nation, you\'re not just funding programs—you\'re fueling a global movement that transforms leaders, builds communities, and changes nations. Every seed sown produces a harvest. Invest in eternity and watch God multiply your blessing.',
+        
+        // Contact & Getting Started
+        'contact|connect|talk to|pastor|how do i|get started|start|join|new|first time': 'Ready to connect? You can talk to a pastor, submit a prayer request, join a small group, or start The King\'s Journey today. No pressure—just real conversations and genuine care. What\'s your first step?'
+      };
+
+      // Match user question against keyword categories
+      for (let pattern in keywords) {
+        const patterns = pattern.split('|');
+        for (let p of patterns) {
+          if (q.includes(p.trim())) {
+            return keywords[pattern];
+          }
+        }
+      }
+
+      // Default response if no keywords match
+      return 'That\'s a great question. At THE INHERITANCE NATION, we believe every person carries a divine inheritance and is called to walk in purpose, influence, excellence, and abundance. Whether your question is about faith, identity, leadership, family, career, or community—we\'ve got resources and people to help. What specific area can I dive deeper into with you? 👑';
+    }
+
+    function addBibleVerse() {
+      const verses = [
+        '<strong>Jeremiah 29:11</strong><br>"For I know the plans I have for you, declares the Lord, plans for welfare and not for evil, to give you a future and a hope."',
+        '<strong>Romans 8:17</strong><br>"Now if we are children, then we are heirs—heirs of God and co-heirs with Christ."',
+        '<strong>1 Peter 2:9</strong><br>"You are a chosen generation, a royal priesthood, a holy nation, His own special people."',
+        '<strong>Proverbs 3:5-6</strong><br>"Trust in the Lord with all your heart and lean not on your own understanding. In all your ways acknowledge Him, and He will make your paths straight."',
+        '<strong>Philippians 4:13</strong><br>"I can do all things through Christ who strengthens me."',
+        '<strong>Psalms 27:1</strong><br>"The Lord is my light and my salvation. Whom shall I fear?"',
+        '<strong>John 10:10</strong><br>"I have come that they may have life, and have it to the full."'
+      ];
+
+      const verse = verses[Math.floor(Math.random() * verses.length)];
+      addMessage(verse, 'ai');
+    }
+
+    function addPrayer() {
+      const prayers = [
+        '<strong>Prayer for Purpose</strong><br>"Lord, reveal my divine inheritance and guide me into the purpose You created for me. Give me courage to walk boldly in Your calling."',
+        '<strong>Prayer for Leadership</strong><br>"Father, help me lead with integrity, wisdom, and kingdom authority. Make me a servant leader who brings transformation to my sphere of influence."',
+        '<strong>Prayer for Identity</strong><br>"God, help me see myself as You see me—chosen, valued, and appointed. Free me from limitations and empower me to live as a king in Your kingdom."',
+        '<strong>Prayer for Strength</strong><br>"Lord, strengthen my faith and help me stand firm in Your promises. Give me the courage to overcome every obstacle in my path."',
+        '<strong>Prayer for Impact</strong><br>"Father, help me be a light in my world. Give me wisdom and resources to make a real difference in my family, workplace, and community."',
+        '<strong>Prayer for Healing</strong><br>"Lord, heal my heart and restore what was broken. Help me walk in wholeness and freedom, embracing the new life You\'ve prepared for me."'
+      ];
+
+      const prayer = prayers[Math.floor(Math.random() * prayers.length)];
+      addMessage(prayer, 'ai');
+    }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e37c33554beed04',t:'MTc3NDcxMjczMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9e3ea671a48c7e7d',t:'MTc3NDc4NDk1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
